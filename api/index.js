@@ -5,13 +5,33 @@ const {
 } = require('discord-interactions');
 const getRawBody = require('raw-body');
 
-const TEST_COMMAND = {
-  name: 'test',
-  description: 'A simple test command',
+const SLAP_COMMAND = {
+  name: 'Slap',
+  description: 'Sometimes you gotta slap a person with a large trout',
+  options: [
+    {
+      name: 'user',
+      description: 'The user to slap',
+      type: 6,
+      required: true,
+    },
+  ],
 };
 
+const INVITE_COMMAND = {
+  name: 'Invite',
+  description: 'Get an invite link to add the bot to your server',
+};
+
+const SUPPORT_COMMAND = {
+  name: 'Support',
+  description: 'Like this bot? Support me!',
+};
+
+const INVITE_URL = `https://discord.com/oauth2/authorize?client_id=${process.env.APPLICATION_ID}&scope=applications.commands`;
+
 /**
- * Simple test command handler
+ * Gotta see someone 'bout a trout
  * @param {VercelRequest} request
  * @param {VercelResponse} response
  */
@@ -30,7 +50,7 @@ module.exports = async (request, response) => {
 
     if (!isValidRequest) {
       console.error('Invalid Request');
-      return response.status(401).send({ error: 'Bad request signature' });
+      return response.status(401).send({ error: 'Bad request signature ' });
     }
 
     const message = request.body;
@@ -42,18 +62,39 @@ module.exports = async (request, response) => {
       });
     } else if (message.type === InteractionType.APPLICATION_COMMAND) {
       switch (message.data.name.toLowerCase()) {
-        case TEST_COMMAND.name.toLowerCase():
+        case SLAP_COMMAND.name.toLowerCase():
           response.status(200).send({
             type: 4,
             data: {
-              content: 'haha ez im working fuckers btw im a butterfly wohoo wohoo ez ez ex',
+              content: `*<@${message.member.user.id}> slaps <@${message.data.options[0].value}> around a bit with a large trout*`,
             },
           });
-          console.log('Test Request');
+          console.log('Slap Request');
+          break;
+        case INVITE_COMMAND.name.toLowerCase():
+          response.status(200).send({
+            type: 4,
+            data: {
+              content: INVITE_URL,
+              flags: 64,
+            },
+          });
+          console.log('Invite request');
+          break;
+        case SUPPORT_COMMAND.name.toLowerCase():
+          response.status(200).send({
+            type: 4,
+            data: {
+              content:
+                "Thanks for using my bot! Let me know what you think on twitter (@IanMitchel1). If you'd like to contribute to hosting costs, you can donate at https://github.com/sponsors/ianmitchell",
+              flags: 64,
+            },
+          });
+          console.log('Support request');
           break;
         default:
           console.error('Unknown Command');
-          response.status(400).send({ error: 'Unknown Command' });
+          response.status(400).send({ error: 'Unknown Type' });
           break;
       }
     } else {
