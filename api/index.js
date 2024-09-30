@@ -46,7 +46,7 @@ module.exports = async (request, response) => {
           response.status(200).send({
             type: 4,
             data: {
-              content: 'haha ez im working fuckers btw im a butterfly wohoo wohoo ez ez ex',
+              content: 'test updated successfully 🤷🏻‍♂️',
             },
           });
           console.log('Test Request');
